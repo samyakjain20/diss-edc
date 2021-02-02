@@ -1,0 +1,45 @@
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+
+    <body>
+
+    <div class="details content">
+        <h2><%= topic.title %></h2>
+        <div class="content">
+            <p><%= topic.body%></p>
+        </div>
+
+        <% if(user) { %>
+            <form method="POST" onsubmit="return doComment(this)">
+                <input type="hidden" name="topic_id" value="<%= topic._id %>" />
+                <input type="hidden" name="username" value="<%= user.email%>" />
+            
+                <div class="row form-group">
+                    <textarea id="comment" name="comment" placeholder="Write something.." style="height:100px"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>                
+            </form>
+        <% } %>
+        <% if(user.email == "rupesh123@gmail.com"){ %>
+            <a class="delete" data-doc="<%= topic._id%>">delete</a>
+        <% } %>
+    </div>
+
+    <%- include("./partials/footer.ejs") %>
+    
+    <script>
+        const trashcan = document.querySelector('a.delete');
+
+        trashcan.addEventListener('click', (e) => {
+        const endpoint = `/topics/${trashcan.dataset.doc}`;
+
+            fetch(endpoint, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => window.location.href = data.redirect)
+            .catch(err => console.log(err));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+
+<body>
+
+    <div class="details content">
+        <h2><%= topic.title %></h2>
+        <div class="content">
+            <p><%= topic.body%></p>
+        </div>
+        <div class="content">
+            <p><%= topic.comment%></p>
+        </div>
+
+        <% if (user) { %>
+            <form method="POST" onsubmit="return doComment(this)">
+              <input type="hidden" name="topic_id" value="<%= topic._id %>" />
+              <input type="hidden" name="username" value="<%= user.email%>" />
+              
+              <div class="row form-group">
+                  <textarea id="comment" name="comment" placeholder="Write something.." style="height:100px"></textarea>
+                  <!-- <label for="comment">Your comment</label> -->
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        <% } %>
+        <% if(user.email == "rupesh123@gmail.com"){ %>
+            <a class="delete" data-doc="<%= topic._id%>">delete</a>
+        <% } %>
+    </div>
+
+    <%- include("./partials/footer.ejs") %>
+    
+    <script>
+        function doComment(form){
+          $.ajax({
+              url:"/comment",
+              method:"POST",
+              data:{username:  form.username.value,
+                comment: form.comment.value,
+                post_id:form.topic_id.value},
+              success:function (response){
+                  alert(response);
+              }
+          });          
+          return false;
+        };
+
+        const trashcan = document.querySelector('a.delete');
+
+        trashcan.addEventListener('click', (e) => {
+        const endpoint = `/topics/${trashcan.dataset.doc}`;
+
+            fetch(endpoint, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => window.location.href = data.redirect)
+            .catch(err => console.log(err));
+        });
+    </script>
+</body>
+</html>
