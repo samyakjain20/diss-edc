@@ -5,7 +5,9 @@ const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const morgan = require('morgan');
 const Topic = require('./models/topic');
-const { get } = require('lodash');
+const Comment = require('./models/comm');
+
+const { get, result } = require('lodash');
 const { render } = require('ejs');
 const { create } = require('./models/topic');
 
@@ -100,27 +102,50 @@ app.delete('/topics/:id', (req, res) => {
   });
 });
 
-app.post('/comment',(req,res) => {
-  // blog.update({"_id": ObjectId(req.body.post_id)},{
-  //   $push: {
-  //     "comments": {username: req.body.username, comment: req.body.comment}
-  //   }, function (error, post) {
-  //     res.send("comment successfully");
+app.post('/:id/comment',(req,res) => {  
+  const comm = new Comment(req.body);
+  console.log(req.params.id);
+  console.log(req.body);
+  
+  const id = req.params.id;
+  // Topic.findByIdAndUpdate(
+  //   {_id: id},
+  //   { $push: { comments: comm  } },
+  //   function (error, success) {
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       console.log(success);
+  //       res.redirect("topics");
+  //     }
   //   }
-  // });
-  const id = req.body.post_id;
+  // );
   Topic.findById(id)
-    .then(result => {
-      topic = result,
-      topic.update( {"_id": mongoose.isValidObjectId(req.body.post_id)},{
-        $push: {
-          "comments": {username: req.body.username, comment: req.body.comment}
-        }, function (error, post) {
-          res.send("comment successfully");
-          res.redirect('/topic/:id');
-        },
-      });
+  .then((result) => {
+    console.log(result);
+    topic = result,
+    // topic.comments = [];
+    topic.comments.push(comm);
+    topic.save()
+    .then((result) => {
+        res.redirect("/topics");
     })
+    .catch((err) => {
+        console.log(err);
+    });
+  })
+  // mongoose.connection.db.collection("topics").updateOne(
+  //   { _id: id }, 
+  //   { $push: { comments: comm  } },
+  //   function (error, success) {
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       console.log(success);
+  //       res.redirect("/topics/:id");
+  //     }
+  //   }
+  // );
 });
 
 app.post('/do-comment', (req, res) => {

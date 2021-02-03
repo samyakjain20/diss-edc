@@ -10,8 +10,7 @@
         </div>
 
         <% if(user) { %>
-            <form method="POST" onsubmit="return doComment(this)">
-                <input type="hidden" name="topic_id" value="<%= topic._id %>" />
+            <form method="POST" action="/<%= topic._id %>/comment" >
                 <input type="hidden" name="username" value="<%= user.email%>" />
             
                 <div class="row form-group">
@@ -28,6 +27,20 @@
     <%- include("./partials/footer.ejs") %>
     
     <script>
+        function doComment(form){
+          $.ajax({
+              req:"/comment",
+              method:"POST",
+              data:{ post_id:form.topic_id.value,
+                username:  form.username.value,
+                comment: form.comment.value },
+              success:function (response){
+                  alert(response);
+              }
+          });          
+          return false;
+        };
+
         const trashcan = document.querySelector('a.delete');
 
         trashcan.addEventListener('click', (e) => {

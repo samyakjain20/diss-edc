@@ -17,8 +17,10 @@
     <ul>
       <li><a href="/">Topic</a></li>
       <li><a href="/about">About</a></li>
-      <% if (user.email == "rupesh123@gmail.com") { %>
-        <li><a href="/topics/create">New Topic</a></li>
+      <% if (user) { %>
+        <% if (user.email == "rupesh123@gmail.com") { %>
+          <li><a href="/topics/create">New Topic</a></li>
+        <% } %>
       <% } %>
     </ul>
     <ul>

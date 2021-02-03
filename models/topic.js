@@ -14,6 +14,10 @@ const topicSchema = new Schema({
         type: String,
         required: true
     },
+    comments: {
+        type: Array,
+        required: false
+    }
 }, {timestamps: true});
 
 const Topic = mongoose.model('Topic', topicSchema);
